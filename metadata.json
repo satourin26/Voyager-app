@@ -1,0 +1,7 @@
+{
+  "name": "Voyager AI",
+  "description": "A smart travel companion that generates detailed itineraries with Google Maps integration, schedules, and a packing/shopping list assistant.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
