@@ -64,7 +64,7 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ items, setItems }) => {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-outfit font-bold text-slate-900">Packing & Shopping List</h2>
+          <h2 className="text-2xl font-outfit font-bold text-slate-900">Shopping List</h2>
           <button 
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}

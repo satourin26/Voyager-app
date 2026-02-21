@@ -5,44 +5,75 @@ interface LayoutProps {
   children: React.ReactNode;
   activeTab: 'itinerary' | 'shopping' | 'plan';
   setActiveTab: (tab: 'itinerary' | 'shopping' | 'plan') => void;
+  lastSaved?: string | null;
+  onExport?: () => void;
+  hasPlan?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab }) => {
+const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lastSaved, onExport, hasPlan }) => {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-50">
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between z-10">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-sm">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a3 3 0 013 3V16.5a1.5 1.5 0 001.5 1.5h1.343M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+      <header className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 md:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 z-10">
+        <div className="flex items-center justify-between w-full sm:w-auto">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center shadow-sm">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a3 3 0 013 3V16.5a1.5 1.5 0 001.5 1.5h1.343M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h1 className="text-lg md:text-xl font-outfit font-bold text-slate-800 tracking-tight">Voyager Arrange</h1>
           </div>
-          <h1 className="text-xl font-outfit font-bold text-slate-800 tracking-tight">Voyager Arrange</h1>
+          
+          <div className="flex sm:hidden items-center gap-3">
+            {lastSaved && (
+              <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                Saved {lastSaved}
+              </div>
+            )}
+            <div className="w-7 h-7 rounded-full bg-slate-200 border border-slate-300"></div>
+          </div>
         </div>
 
-        <nav className="flex bg-slate-100 p-1 rounded-xl shadow-inner">
+        <nav className="flex bg-slate-100 p-1 rounded-xl shadow-inner w-full sm:w-auto overflow-x-auto no-scrollbar">
           <button 
             onClick={() => setActiveTab('plan')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'plan' ? 'bg-white text-brand-red shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'plan' ? 'bg-white text-brand-red shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Trip Details
           </button>
           <button 
             onClick={() => setActiveTab('itinerary')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'itinerary' ? 'bg-white text-brand-red shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'itinerary' ? 'bg-white text-brand-red shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Schedule
           </button>
           <button 
             onClick={() => setActiveTab('shopping')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'shopping' ? 'bg-white text-brand-red shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 sm:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'shopping' ? 'bg-white text-brand-red shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Shopping
           </button>
         </nav>
 
-        <div className="hidden md:flex items-center gap-4 text-slate-400">
-           <svg className="w-6 h-6 hover:text-slate-600 cursor-pointer transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+        <div className="hidden sm:flex items-center gap-4">
+           {lastSaved && (
+             <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+               Auto-saved at {lastSaved}
+             </div>
+           )}
+           
+           {hasPlan && onExport && (
+             <button 
+               onClick={onExport}
+               className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-md active:scale-95"
+             >
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+               Export Data
+             </button>
+           )}
+
            <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300"></div>
         </div>
       </header>

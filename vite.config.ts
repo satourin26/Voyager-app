@@ -5,9 +5,6 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
-      // 1. 新增這一行，確保資源路徑正確
-      base: '/Voyager-app/', 
-      
       server: {
         port: 3000,
         host: '0.0.0.0',

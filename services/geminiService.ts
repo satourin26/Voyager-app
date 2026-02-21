@@ -2,20 +2,28 @@
 import { GoogleGenAI } from "@google/genai";
 import { GroundingLink } from "../types";
 
-const API_KEY = process.env.API_KEY || "";
+const API_KEY = process.env.GEMINI_API_KEY || process.env.API_KEY || "";
 
 /**
  * Uses Gemini to find the Google Maps URL and basic info for a location/activity.
  */
 export const lookupLocationDetails = async (activity: string, destination: string): Promise<GroundingLink | null> => {
-  if (!API_KEY) return null;
+  if (!API_KEY) {
+    console.error("Gemini API Key is missing");
+    return null;
+  }
   const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-  const prompt = `Find the official Google Maps link and exact name for: "${activity}" in ${destination}.`;
+  // If activity is generic, focus on the destination
+  const searchQuery = (activity === 'New Activity' || !activity) 
+    ? destination 
+    : `${activity} in ${destination}`;
+
+  const prompt = `Find the official Google Maps link and exact name for: "${searchQuery}".`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-latest",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         tools: [{ googleMaps: {} }],
@@ -31,6 +39,16 @@ export const lookupLocationDetails = async (activity: string, destination: strin
         uri: mapsChunk.maps.uri
       };
     }
+    
+    // Fallback: if no maps chunk, try to find a web link from grounding
+    const webChunk = groundingChunks.find((chunk: any) => chunk.web);
+    if (webChunk && webChunk.web) {
+      return {
+        title: webChunk.web.title,
+        uri: webChunk.web.uri
+      };
+    }
+
     return null;
   } catch (error) {
     console.error("Gemini Location Lookup Error:", error);
@@ -42,15 +60,22 @@ export const lookupLocationDetails = async (activity: string, destination: strin
  * Uses Gemini Search to find real-time transit information (like 乘換案內 / Jorudan).
  */
 export const lookupTransitDetails = async (activity: string, destination: string): Promise<GroundingLink | null> => {
-  if (!API_KEY) return null;
+  if (!API_KEY) {
+    console.error("Gemini API Key is missing");
+    return null;
+  }
   const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-  const prompt = `Search for the best real-time transit route/guide for reaching "${activity}" in ${destination}. 
-  Provide a summary of the most common transit method (e.g. "JR Kobe Line") and a link to a real-time transit guide like 乘換案內 (Jorudan) or Google Maps Transit.`;
+  const searchQuery = (activity === 'New Activity' || !activity) 
+    ? `transit to ${destination}` 
+    : `best way to get to ${activity} in ${destination} using public transport`;
+
+  const prompt = `Search for the best real-time transit route/guide for: "${searchQuery}". 
+  Provide a summary of the most common transit method and a link to a real-time transit guide like Jorudan, Google Maps Transit, or official local transport site.`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview", // Using a model with googleSearch capability
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
@@ -65,7 +90,9 @@ export const lookupTransitDetails = async (activity: string, destination: string
 
     if (searchLink) {
       // Create a short summary from the text if possible
-      const summary = text.split('\n')[0].substring(0, 50) + (text.length > 50 ? '...' : '');
+      const firstLine = text.split('\n')[0].replace(/[#*]/g, '').trim();
+      const summary = firstLine.length > 60 ? firstLine.substring(0, 57) + '...' : firstLine;
+      
       return {
         title: summary || searchLink.title,
         uri: searchLink.uri

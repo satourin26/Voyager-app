@@ -10,6 +10,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'itinerary' | 'shopping' | 'plan'>('plan');
   const [currentPlan, setCurrentPlan] = useState<TravelPlan | null>(null);
   const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
 
   // Load from local storage
   useEffect(() => {
@@ -20,6 +21,7 @@ const App: React.FC = () => {
         setCurrentPlan(parsed);
         setShoppingItems(parsed.shoppingList || []);
         setActiveTab('itinerary');
+        setLastSaved(new Date().toLocaleTimeString());
       } catch (e) {
         console.error("Failed to load saved plan", e);
       }
@@ -31,8 +33,22 @@ const App: React.FC = () => {
     if (currentPlan) {
       const planToSave = { ...currentPlan, shoppingList: shoppingItems };
       localStorage.setItem('voyager_arranged_plan', JSON.stringify(planToSave));
+      setLastSaved(new Date().toLocaleTimeString());
     }
   }, [currentPlan, shoppingItems]);
+
+  const handleExport = () => {
+    if (!currentPlan) return;
+    const dataStr = JSON.stringify({ ...currentPlan, shoppingList: shoppingItems }, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `voyager_plan_${currentPlan.destination.replace(/\s+/g, '_')}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
 
   const handleSetupTrip = (info: TripBasicInfo) => {
     const start = new Date(info.startDate);
@@ -68,7 +84,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
+    <Layout 
+      activeTab={activeTab} 
+      setActiveTab={setActiveTab} 
+      lastSaved={lastSaved} 
+      onExport={handleExport}
+      hasPlan={!!currentPlan}
+    >
       {activeTab === 'plan' && (
         <TripSetup onSetupComplete={handleSetupTrip} />
       )}
