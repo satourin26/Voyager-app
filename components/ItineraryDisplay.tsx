@@ -30,6 +30,17 @@ const ItineraryManager: React.FC<ItineraryManagerProps> = ({ plan, onUpdatePlan 
   const expandAll = () => setCollapsedDayIds(new Set());
   const collapseAll = () => setCollapsedDayIds(new Set(plan.days.map(d => d.id)));
 
+  // Auto-resize all textareas when plan changes or on mount
+  useEffect(() => {
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(ta => {
+      if (ta.placeholder === "Add details or notes...") {
+        ta.style.height = '0px';
+        ta.style.height = `${ta.scrollHeight}px`;
+      }
+    });
+  }, [plan, collapsedDayIds]);
+
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
       titleInputRef.current.focus();
@@ -209,9 +220,14 @@ const ItineraryManager: React.FC<ItineraryManagerProps> = ({ plan, onUpdatePlan 
                   <div className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`}>
                     <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                   </div>
-                  <h3 className="text-xl font-outfit font-bold text-slate-800">
-                    Day {idx + 1} <span className="ml-2 text-slate-400 font-normal">• {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
-                  </h3>
+                  <div className="flex flex-col">
+                    <h3 className="text-xl font-outfit font-bold text-slate-800 leading-tight">
+                      Day {idx + 1}
+                    </h3>
+                    <span className="text-sm text-slate-400 font-normal leading-tight">
+                      {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
                 </div>
                 <button 
                   onClick={(e) => {
@@ -276,18 +292,20 @@ const ItineraryManager: React.FC<ItineraryManagerProps> = ({ plan, onUpdatePlan 
                               placeholder="Activity name..."
                               className="w-full bg-transparent text-lg font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-red-300 rounded px-1"
                             />
-                            <textarea
-                              rows={1}
-                              value={item.content || ''}
-                              onChange={(e) => updateItem(day.id, item.id, { content: e.target.value })}
-                              placeholder="Add details or notes..."
-                              className="w-full bg-transparent text-sm font-bold text-slate-600 focus:outline-none focus:ring-1 focus:ring-red-200 rounded px-1 resize-none overflow-hidden"
-                              onInput={(e) => {
-                                const target = e.target as HTMLTextAreaElement;
-                                target.style.height = 'auto';
-                                target.style.height = `${target.scrollHeight}px`;
-                              }}
-                            />
+                            <div className="w-full">
+                              <textarea
+                                rows={1}
+                                value={item.content || ''}
+                                onChange={(e) => updateItem(day.id, item.id, { content: e.target.value })}
+                                placeholder="Add details or notes..."
+                                className="w-full bg-transparent text-sm font-bold text-slate-600 focus:outline-none focus:ring-1 focus:ring-red-200 rounded px-1 resize-none overflow-hidden min-h-[1.5rem]"
+                                onInput={(e) => {
+                                  const target = e.target as HTMLTextAreaElement;
+                                  target.style.height = '0px';
+                                  target.style.height = `${target.scrollHeight}px`;
+                                }}
+                              />
+                            </div>
                           </div>
                           
                           <div className="flex flex-wrap items-center gap-3">

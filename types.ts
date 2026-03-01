@@ -26,7 +26,7 @@ export interface DayPlan {
 export interface ShoppingItem {
   id: string;
   name: string;
-  category: 'Essentials' | 'Clothing' | 'Electronics' | 'Toiletries' | 'Other';
+  category: 'Food and Drinks' | 'Luxury' | 'Clothing' | 'Electronics' | 'Cosmetics' | 'Other';
   completed: boolean;
   priceTWD?: string;
   priceLocal?: string;

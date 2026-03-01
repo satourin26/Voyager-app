@@ -16,7 +16,8 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ items, setItems }) => {
   const [couponUrl, setCouponUrl] = useState('');
   const [category, setCategory] = useState<ShoppingItem['category']>('Other');
   
-  const [filter, setFilter] = useState<'All' | 'Completed' | 'Pending'>('All');
+  const [filter, setFilter] = useState<'All' | 'Pending' | 'Completed'>('All');
+  const [categoryFilter, setCategoryFilter] = useState<string>('All Categories');
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const addItem = (e: React.FormEvent) => {
@@ -53,10 +54,12 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ items, setItems }) => {
   };
 
   const filteredItems = items.filter(item => {
-    if (filter === 'Completed') return item.completed;
-    if (filter === 'Pending') return !item.completed;
-    return true;
+    const matchesStatus = filter === 'All' ? true : (filter === 'Completed' ? item.completed : !item.completed);
+    const matchesCategory = categoryFilter === 'All Categories' ? true : item.category === categoryFilter;
+    return matchesStatus && matchesCategory;
   });
+
+  const categories = ['Food and Drinks', 'Luxury', 'Clothing', 'Electronics', 'Cosmetics', 'Other'];
 
   const currencies = ['JPY', 'USD', 'EUR', 'KRW', 'THB', 'HKD', 'GBP'];
 
@@ -174,17 +177,33 @@ const ShoppingList: React.FC<ShoppingListProps> = ({ items, setItems }) => {
           )}
         </form>
 
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide border-b border-slate-100">
-          {['All', 'Pending', 'Completed'].map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFilter(f as any)}
-              className={`px-5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${filter === f ? 'bg-brand-red text-white shadow-md' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+        <div className="flex flex-wrap items-center gap-4 mb-8 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Filter:</span>
+            <select 
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-red transition-all text-xs font-bold text-slate-700"
             >
-              {f}
-            </button>
-          ))}
+              <option value="All Categories">All Categories</option>
+              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+            </select>
+          </div>
+
+          <div className="h-4 w-px bg-slate-200 hidden md:block"></div>
+
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            {['All', 'Pending', 'Completed'].map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFilter(f as any)}
+                className={`px-4 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${filter === f ? 'bg-brand-red text-white shadow-md' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-4">
