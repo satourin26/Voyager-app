@@ -30,11 +30,11 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, last
             <h1 className="text-lg md:text-xl font-outfit font-bold text-slate-800 tracking-tight">Voyager Arrange</h1>
           </div>
           
-          <div className="flex sm:hidden items-center gap-3">
+          <div className="flex items-center gap-3">
             {lastSaved && (
               <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                Saved {lastSaved}
+                <span className="hidden xs:inline">Saved</span> {lastSaved}
               </div>
             )}
             <div className="w-7 h-7 rounded-full bg-slate-200 border border-slate-300"></div>
@@ -62,15 +62,15 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, last
           </button>
         </nav>
 
-        <div className="hidden sm:flex items-center gap-4">
+        <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-4 w-full sm:w-auto">
            {lastSaved && (
-             <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+             <div className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                Auto-saved at {lastSaved}
              </div>
            )}
            
-           <div className="flex items-center gap-2">
+           <div className="flex items-center gap-2 w-full sm:w-auto">
              {onImport && (
                <>
                  <input 
@@ -82,10 +82,10 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, last
                  />
                  <button 
                    onClick={triggerImport}
-                   className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white text-slate-700 text-[10px] sm:text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm active:scale-95 whitespace-nowrap"
                  >
-                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                   Import Data
+                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                   Import
                  </button>
                </>
              )}
@@ -93,15 +93,15 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, last
              {hasPlan && onExport && (
                <button 
                  onClick={onExport}
-                 className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-md active:scale-95"
+                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-slate-900 text-white text-[10px] sm:text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-md active:scale-95 whitespace-nowrap"
                >
-                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                 Export Data
+                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                 Export
                </button>
              )}
            </div>
 
-           <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300"></div>
+           <div className="hidden sm:block w-8 h-8 rounded-full bg-slate-200 border border-slate-300"></div>
         </div>
       </header>
 
