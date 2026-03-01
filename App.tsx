@@ -50,6 +50,36 @@ const App: React.FC = () => {
     linkElement.click();
   };
 
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const parsed = JSON.parse(content);
+        
+        // Basic validation
+        if (parsed && parsed.destination && Array.isArray(parsed.days)) {
+          setCurrentPlan(parsed);
+          setShoppingItems(parsed.shoppingList || []);
+          setActiveTab('itinerary');
+          setLastSaved(new Date().toLocaleTimeString());
+          alert('Plan imported successfully!');
+        } else {
+          alert('Invalid plan file format.');
+        }
+      } catch (err) {
+        console.error("Failed to parse imported file", err);
+        alert('Failed to read the file. Please make sure it is a valid JSON.');
+      }
+    };
+    reader.readAsText(file);
+    // Reset input
+    event.target.value = '';
+  };
+
   const handleSetupTrip = (info: TripBasicInfo) => {
     const start = new Date(info.startDate);
     const end = new Date(info.endDate);
@@ -89,6 +119,7 @@ const App: React.FC = () => {
       setActiveTab={setActiveTab} 
       lastSaved={lastSaved} 
       onExport={handleExport}
+      onImport={handleImport}
       hasPlan={!!currentPlan}
     >
       {activeTab === 'plan' && (
